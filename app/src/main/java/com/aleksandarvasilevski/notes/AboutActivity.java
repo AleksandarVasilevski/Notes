@@ -25,7 +25,7 @@ public class AboutActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent openMarketIntent = new Intent(Intent.ACTION_VIEW);
-                openMarketIntent.setData(Uri.parse("market://details?id=com.aleksandarvasilevski.notes"));
+                openMarketIntent.setData(Uri.parse("https://play.google.com/store/apps/details?id=com.aleksandarvasilevski.notes"));
                 startActivity(openMarketIntent);
             }
         });

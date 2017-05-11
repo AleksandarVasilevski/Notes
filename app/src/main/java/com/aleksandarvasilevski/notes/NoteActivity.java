@@ -21,23 +21,29 @@ import android.widget.Toast;
 
 import com.aleksandarvasilevski.notes.data.NoteContract.NoteEntry;
 
+/**
+ * Allows user to create a new note or edit an existing one.
+ */
 public class NoteActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /** Identifier for the note data loader */
     private static final int EXISTING_NOTE_LOADER = 0;
 
-    // Content URI for the existing note (null if it's a new note)
+    /** Content URI for the existing note (null if it's a new note) */
     private Uri mCurrentNoteUri;
 
+    /** EditText field to enter the note title */
     private EditText mTitleEditText;
+
+    /** EditText field to enter the note description */
     private EditText mDescriptionEditText;
 
-    /** Boolean flag that keeps track of whether the pet has been edited (true) or not (false) */
+    /** Boolean flag that keeps track of whether the Note has been edited (true) or not (false) */
     private boolean mNoteHasChanged = false;
 
     /**
      * OnTouchListener that listens for any user touches on a View, implying that they are modifying
-     * the view, and we change the mPetHasChanged boolean to true.
+     * the view, and we change the mNoteHasChanged boolean to true.
      */
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
@@ -52,12 +58,22 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
 
+        // Examine the intent that was used to launch this activity,
+        // in order to figure out if we're creating a new note or editing an existing one.
         Intent intent = getIntent();
         mCurrentNoteUri = intent.getData();
+
+        // If the intent DOES NOT contain a note content URI, then we know that we are
+        // creating a new note.
         if (mCurrentNoteUri == null){
+            // This is a new note, so change the app bar to say "Add a Note"
             setTitle("Add Note");
+
+            // Invalidate the options menu, so the "Delete" menu option can be hidden.
+            // (It doesn't make sense to delete a note that hasn't been created yet.)
             invalidateOptionsMenu();
         }else {
+            // Otherwise this is an existing note, so change app bar to say "Edit Note"
             setTitle("Edit Note");
             // Initialize a loader to read the note data from the database
             // and display the current values in the editor
@@ -69,19 +85,25 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         mDescriptionEditText = (EditText)findViewById(R.id.editDescription);
     }
 
+    /**
+     * Get user input from editor and save note into database.
+     */
     private void saveNote(){
+        // Read from input fields
         String titleString = mTitleEditText.getText().toString();
         String descriptionString = mDescriptionEditText.getText().toString();
 
-        // Check if this is supposed to be a new pet
+        // Check if this is supposed to be a new note
         // and check if all the fields in the editor are blank
         if (mCurrentNoteUri == null &&
                 TextUtils.isEmpty(titleString) && TextUtils.isEmpty(descriptionString)) {
-            // Since no fields were modified, we can return early without creating a new pet.
+            // Since no fields were modified, we can return early without creating a new note.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             return;
         }
 
+        // Create a ContentValues object where column names are the keys,
+        // and notes attributes from the editor are the values.
         ContentValues values = new ContentValues();
         values.put(NoteEntry.COLUMN_TITLE, titleString);
         values.put(NoteEntry.COLUMN_DESCRIPTION, descriptionString);
@@ -91,10 +113,13 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
             // This is a NEW note, so insert a new note into the provider,
             // returning the content URI for the new note.
             Uri newUri = getContentResolver().insert(NoteEntry.CONTENT_URI, values);
+            // Show a toast message depending on whether or not the insertion was successful.
             if (newUri == null){
-            Toast.makeText(this, "Error with saving the note", Toast.LENGTH_SHORT).show();
+                // If the new content URI is null, then there was an error with insertion.
+                Toast.makeText(this, "Error with saving the note", Toast.LENGTH_SHORT).show();
             }else {
-            Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show();
+                // Otherwise, the insertion was successful and we can display a toast.
+                Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show();
             }
         } else {
             // Otherwise this is an EXISTING note, so update the note with content URI: mCurrentNoteUri
@@ -188,12 +213,14 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
                 // Exit activity
                 finish();
                 return true;
-            // Respond to a click on the "Up" arrow button in the app bar
+            // Respond to a click on the "Cancel" menu option
             case R.id.action_cancel:
+                // Exit activity
                 finish();
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
+                // Pop up confirmation dialog for deletion
                 showDeleteConfirmationDialog();
                 return true;
         }
@@ -211,7 +238,7 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
-                mCurrentNoteUri,         // Query the content URI for the current note
+                mCurrentNoteUri,        // Query the content URI for the current note
                 projection,             // Columns to include in the resulting Cursor
                 null,                   // No selection clause
                 null,                   // No selection arguments
@@ -228,7 +255,7 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
             if (cursor.moveToFirst()) {
-                // Find the columns of pet attributes that we're interested in
+                // Find the columns of note attributes that we're interested in
                 int titleColumnIndex = cursor.getColumnIndex(NoteEntry.COLUMN_TITLE);
                 int descriptionColumnIndex = cursor.getColumnIndex(NoteEntry.COLUMN_DESCRIPTION);
 

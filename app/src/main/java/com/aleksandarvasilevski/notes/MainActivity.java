@@ -19,15 +19,20 @@ import android.widget.ListView;
 import com.aleksandarvasilevski.notes.data.NoteContract.NoteEntry;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-
+/**
+ * Displays list of notes that were entered and stored in the app.
+ */
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private FirebaseAnalytics mFirebaseAnalytics;
 
+    /** Identifier for the note data loader */
     private static final int NOTE_LOADER = 0;
 
+    /** Adapter for the ListView */
     NoteCursorAdapter mCursorAdapter;
 
+    /** ListView for the View */
     ListView listView;
 
     @Override
@@ -38,13 +43,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
+        // Find the ListView which will be populated with the note data
         listView = (ListView)findViewById(R.id.list);
 
+        // Setup an Adapter to create a list item for each row of note data in the Cursor.
         mCursorAdapter = new NoteCursorAdapter(this, null);
         listView.setAdapter(mCursorAdapter);
 
+        // Kick off the loader
         getSupportLoaderManager().initLoader(NOTE_LOADER, null, this);
 
+        // Setup the list item click listener
         listViewOnClick();
     }
 
@@ -64,9 +73,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 Intent newNoteIntent = new Intent(MainActivity.this, NoteActivity.class);
                 startActivity(newNoteIntent);
                 return true;
+            // Respond to a click on the "Delete all notes" menu option
             case R.id.action_delete_all_entries:
                 deleteAllNotes();
                 return true;
+            // Respond to a click on the "About" menu option
             case R.id.action_about:
                 Intent aboutIntent = new Intent(MainActivity.this, AboutActivity.class);
                 startActivity(aboutIntent);
@@ -76,6 +87,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Setup the list item click listener
+     */
     public void listViewOnClick(){
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -98,26 +112,30 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // Define a projection that specifies the columns from the table we need.
         String[] projection = {
                 NoteEntry._ID,
                 NoteEntry.COLUMN_TITLE
         };
 
-        return new CursorLoader(this,
-                NoteEntry.CONTENT_URI,
-                projection,
-                null,
-                null,
-                null);
+        // This loader will execute the ContentProvider's query method on a background thread
+        return new CursorLoader(this,       // Parent activity context
+                NoteEntry.CONTENT_URI,      // Provider content URI to query
+                projection,                 // Columns to include in the resulting Cursor
+                null,                       // No selection clause
+                null,                       // No selection arguments
+                null);                      // Default sort order
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        // Update {@link NoteCursorAdapter} with this new cursor containing updated note data
         mCursorAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        // Callback called when the data needs to be deleted
         mCursorAdapter.swapCursor(null);
 
     }
