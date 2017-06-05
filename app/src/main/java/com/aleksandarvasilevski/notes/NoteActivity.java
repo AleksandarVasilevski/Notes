@@ -21,6 +21,8 @@ import android.widget.Toast;
 
 import com.aleksandarvasilevski.notes.data.NoteContract.NoteEntry;
 
+import java.util.Date;
+
 /**
  * Allows user to create a new note or edit an existing one.
  */
@@ -92,6 +94,8 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         // Read from input fields
         String titleString = mTitleEditText.getText().toString();
         String descriptionString = mDescriptionEditText.getText().toString();
+        Date dateObject = new Date();
+        String dateString = dateObject.toString() ;
 
         // Check if this is supposed to be a new note
         // and check if all the fields in the editor are blank
@@ -107,6 +111,7 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         ContentValues values = new ContentValues();
         values.put(NoteEntry.COLUMN_TITLE, titleString);
         values.put(NoteEntry.COLUMN_DESCRIPTION, descriptionString);
+        values.put(NoteEntry.COLUMN_DATE, dateString);
 
         // Determine if this is a new or existing note by checking if mCurrentNoteUri is null or not
         if (mCurrentNoteUri == null) {
@@ -234,7 +239,8 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         String[] projection = {
                 NoteEntry._ID,
                 NoteEntry.COLUMN_TITLE,
-                NoteEntry.COLUMN_DESCRIPTION,};
+                NoteEntry.COLUMN_DESCRIPTION,
+                NoteEntry.COLUMN_DATE,};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
@@ -258,14 +264,18 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
                 // Find the columns of note attributes that we're interested in
                 int titleColumnIndex = cursor.getColumnIndex(NoteEntry.COLUMN_TITLE);
                 int descriptionColumnIndex = cursor.getColumnIndex(NoteEntry.COLUMN_DESCRIPTION);
+                int dateColumnIndex = cursor.getColumnIndex(NoteEntry.COLUMN_DATE);
 
                 // Extract out the value from the Cursor for the given column index
                 String title = cursor.getString(titleColumnIndex);
                 String description = cursor.getString(descriptionColumnIndex);
+                String date = cursor.getString(dateColumnIndex);
 
                 // Update the views on the screen with the values from the database
                 mTitleEditText.setText(title);
                 mDescriptionEditText.setText(description);
+
+
             }
         }
     }

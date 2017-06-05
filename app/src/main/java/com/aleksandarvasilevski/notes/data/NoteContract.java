@@ -26,5 +26,6 @@ public class NoteContract {
         public final static String _ID = BaseColumns._ID;
         public final static String COLUMN_TITLE = "title";
         public final static String COLUMN_DESCRIPTION = "description";
+        public final static String COLUMN_DATE = "date";
     }
 }

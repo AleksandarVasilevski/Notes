@@ -109,6 +109,11 @@ public class NoteProvider extends ContentProvider{
             throw new IllegalArgumentException("The note is empty");
         }
 
+        String data = values.getAsString(NoteEntry.COLUMN_DATE);
+        if (data == null){
+            throw new IllegalArgumentException("There is no date");
+        }
+
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         long id = database.insert(NoteEntry.TABLE_NAME, null, values);
@@ -177,10 +182,18 @@ public class NoteProvider extends ContentProvider{
 
         if (values.containsKey(NoteEntry.COLUMN_DESCRIPTION)){
             String description = values.getAsString(NoteEntry.COLUMN_DESCRIPTION);
-                if (description == null) {
-                    throw new IllegalArgumentException("The note is empty");
-                }
+            if (description == null) {
+                throw new IllegalArgumentException("The note is empty");
             }
+        }
+
+        if (values.containsKey(NoteEntry.COLUMN_DATE)){
+            String date = values.getAsString(NoteEntry.COLUMN_DATE);
+            if (date == null){
+                throw new IllegalArgumentException("There is no date");
+            }
+        }
+
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         int rowsUpdated = database.update(NoteEntry.TABLE_NAME, values, selection, selectionArgs);

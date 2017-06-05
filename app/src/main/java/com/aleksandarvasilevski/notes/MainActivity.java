@@ -115,7 +115,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // Define a projection that specifies the columns from the table we need.
         String[] projection = {
                 NoteEntry._ID,
-                NoteEntry.COLUMN_TITLE
+                NoteEntry.COLUMN_TITLE,
+                NoteEntry.COLUMN_DATE
         };
 
         // This loader will execute the ContentProvider's query method on a background thread

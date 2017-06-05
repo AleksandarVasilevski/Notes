@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import com.aleksandarvasilevski.notes.data.NoteContract;
 
+import java.util.Date;
+
 
 public class NoteCursorAdapter extends CursorAdapter {
 
@@ -24,12 +26,17 @@ public class NoteCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
+
         TextView titleTextView = (TextView)view.findViewById(R.id.title_textview);
+        TextView dateTextView = (TextView)view.findViewById(R.id.date_textview);
 
         int titleColumnIndex = cursor.getColumnIndex(NoteContract.NoteEntry.COLUMN_TITLE);
+        int dateColumnIndex = cursor.getColumnIndex(NoteContract.NoteEntry.COLUMN_DATE);
 
         String title = cursor.getString(titleColumnIndex);
+        String date = cursor.getString(dateColumnIndex);
 
         titleTextView.setText(title);
+        dateTextView.setText(date);
     }
 }
