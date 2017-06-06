@@ -16,13 +16,13 @@ public class NoteDbHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    String SQL_CREATE_NOTES_TABLE = "CREATE TABLE " + NoteEntry.TABLE_NAME + "("
+    private static final String SQL_CREATE_NOTES_TABLE = "CREATE TABLE " + NoteEntry.TABLE_NAME + "("
             + NoteEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + NoteEntry.COLUMN_TITLE + " TEXT, "
             + NoteEntry.COLUMN_DESCRIPTION + " TEXT, "
             + NoteEntry.COLUMN_DATE + " TEXT);";
 
-    public static final String SQL_TWO = "DATE "
+    private static final String SQL_TWO = "ALTER TABLE "
             + NoteEntry.TABLE_NAME + " ADD COLUMN " + NoteEntry.COLUMN_DATE + " TEXT;";
 
     @Override
