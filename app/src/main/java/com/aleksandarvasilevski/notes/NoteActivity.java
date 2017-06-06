@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.aleksandarvasilevski.notes.data.NoteContract.NoteEntry;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -94,8 +95,11 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         // Read from input fields
         String titleString = mTitleEditText.getText().toString();
         String descriptionString = mDescriptionEditText.getText().toString();
+
+        //New date object for time and date
         Date dateObject = new Date();
-        String dateString = dateObject.toString() ;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy, hh:mm");
+        String dateString = dateFormat.format(dateObject);
 
         // Check if this is supposed to be a new note
         // and check if all the fields in the editor are blank
