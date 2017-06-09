@@ -9,8 +9,10 @@ import android.net.Uri;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.ShareActionProvider;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,6 +42,8 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
 
     /** EditText field to enter the note description */
     private EditText mDescriptionEditText;
+
+    private ShareActionProvider mShareActionProvider;
 
     /** Boolean flag that keeps track of whether the Note has been edited (true) or not (false) */
     private boolean mNoteHasChanged = false;
@@ -86,6 +90,64 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         //Adding reference to each of the UI widgets
         mTitleEditText = (EditText)findViewById(R.id.editTitle);
         mDescriptionEditText = (EditText)findViewById(R.id.editDescription);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_note, menu);
+
+        // Locate MenuItem with ShareActionProvider
+        MenuItem item = menu.findItem(R.id.action_share);
+
+        // Fetch and store ShareActionProvider
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Respond to a click on the "Save" menu option
+        switch (item.getItemId()) {
+            // Respond to a click on the "ok" menu option
+            case R.id.action_ok:
+                // Save note to database
+                saveNote();
+                // Exit activity
+                finish();
+                return true;
+            // Respond to a click on the "Cancel" menu option
+            case R.id.action_cancel:
+                // Exit activity
+                finish();
+                return true;
+            // Respond to a click on the "Delete" menu option
+            case R.id.action_delete:
+                // Pop up confirmation dialog for deletion
+                showDeleteConfirmationDialog();
+                return true;
+            case R.id.action_share:
+                shareIntent();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    // Call to update the share intent
+    private void setShareIntent(Intent shareIntent) {
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(shareIntent);
+        }
+    }
+
+    // Intent to share Note Description
+    private void shareIntent(){
+        String shareText = mDescriptionEditText.getText().toString();
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, shareText);
+        sendIntent.setType("text/plain");
+        startActivity(sendIntent);
     }
 
     /**
@@ -202,38 +264,6 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
 
         // Close the activity
         finish();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_note, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Respond to a click on the "Save" menu option
-        switch (item.getItemId()) {
-            // Respond to a click on the "ok" menu option
-            case R.id.action_ok:
-                // Save note to database
-                saveNote();
-                // Exit activity
-                finish();
-                return true;
-            // Respond to a click on the "Cancel" menu option
-            case R.id.action_cancel:
-                // Exit activity
-                finish();
-                return true;
-            // Respond to a click on the "Delete" menu option
-            case R.id.action_delete:
-                // Pop up confirmation dialog for deletion
-                showDeleteConfirmationDialog();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

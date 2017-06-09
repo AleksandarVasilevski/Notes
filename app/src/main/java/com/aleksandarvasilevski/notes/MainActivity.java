@@ -4,6 +4,7 @@ import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -35,6 +36,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     /** ListView for the View */
     ListView listView;
 
+    //** Floating Action Button*/
+    FloatingActionButton fabAdd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +48,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         // Find the ListView which will be populated with the note data
-        listView = (ListView)findViewById(R.id.list);
+        listView = (ListView)findViewById(R.id.listView);
+
+        // Find the FloatingActionButton which will be adding new note
+        fabAdd = (FloatingActionButton)findViewById(R.id.fab_add);
 
         // Setup an Adapter to create a list item for each row of note data in the Cursor.
         mCursorAdapter = new NoteCursorAdapter(this, null);
@@ -55,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         // Setup the list item click listener
         listViewOnClick();
+        fabOnClickListener();
     }
 
     @Override
@@ -69,9 +77,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {
             // Respond to a click on the "Add note" menu option
-            case R.id.action_add:
-                Intent newNoteIntent = new Intent(MainActivity.this, NoteActivity.class);
-                startActivity(newNoteIntent);
+            case R.id.action_search:
+                searchNote();
                 return true;
             // Respond to a click on the "Delete all notes" menu option
             case R.id.action_delete_all_entries:
@@ -100,6 +107,26 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 startActivity(intent);
             }
         });
+    }
+
+    /**
+     * OnClickListener for Floating Action Button
+     */
+    public void fabOnClickListener(){
+        fabAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent newNoteIntent = new Intent(MainActivity.this, NoteActivity.class);
+                startActivity(newNoteIntent);
+            }
+        });
+    }
+
+    /**
+     * Method for searching note
+     */
+    private void searchNote(){
+
     }
 
     /**
